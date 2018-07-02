@@ -9,6 +9,11 @@
 #    http://shiny.rstudio.com/
 #
 
+install.packages('leaflet')
+install.packages('tidyverse')
+install.packages('ggplot2')
+system('sudo apt-get update && apt-get install -y libudunits2-dev libgdal-dev libproj-dev')
+install.packages('tigris') 
 
 #identify variables to allow for check boxes
 check.vars<-c("avg_coalesced_commercial_age"
@@ -40,8 +45,8 @@ check.vars<-c("avg_coalesced_commercial_age"
               ,"avg_foodatlas12_fast_food_restaurants_index"
               ,"avg_foodatlas12_full_service_restaurants_index"
               ,"avg_last_6_months_dunkin_donuts_index"
-              ,"avg_last_6_months_lenscrafters_index"
-              ,"avg_last_6_months_pearlevision_index"
+              ,"avg_last_6_months_mcdonalds_index"
+              ,"avg_last_6_months_starbucks_index"
               ,"total_count_index")
               
 library(shiny)
