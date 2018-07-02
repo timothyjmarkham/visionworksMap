@@ -99,19 +99,19 @@ zip.to.geoid<-read_civis("visionworks.zip_to_geoid", stringsAsFactors = FALSE)
 
 summary.file<-read_civis("dunkin.census_tract_summary_file", stringsAsFactors = FALSE)
 tx.data<-summary.file[summary.file$state_code == 'TX', ]
-tx.zip.data <- left_join(tx.data, zip.to.geoid[ , c("GEOID","ZCTA5")], by=c("census_tract"="GEOID"))
+tx.zip.data <- left_join(tx.data, zip.to.geoid[ , c("geoid","zcta5")], by=c("census_tract"="geoid"))
 
-sum(is.na(tx.zip.data$ZCTA5))
+sum(is.na(tx.zip.data$zcta5))
 
 tx.zip.summary <- tx.zip.data %>%
-  group_by(ZCTA5) %>%
+  group_by(zcta5) %>%
   summarise_all(funs(mean))
 
-tx.zip.counts <- tx.zip.data[ , c("total_count", "ZCTA5")] %>%
-  group_by(ZCTA5) %>%
+tx.zip.counts <- tx.zip.data[ , c("total_count", "zcta5")] %>%
+  group_by(zcta5) %>%
   summarise_all(funs(sum))
 
-tx.zip.summary$zip.code<-as.character(tx.zip.summary$ZCTA5)
+tx.zip.summary$zip.code<-as.character(tx.zip.summary$zcta5)
 tx.zip.summary$total_count<-tx.zip.counts$total_count
 
 tx.zips<- zctas(year = 2010, state = "TX")
@@ -197,6 +197,16 @@ server <- function(input, output) {
     
         
      us.leaflet<-leaflet() %>% addProviderTiles("CartoDB.Positron") %>%
+       addPolygons(data= tx.zips, 
+                   fillColor = ~pal(tx.zips@data$total_count),
+                   color = "#b2aeae",
+                   fillOpacity = .4,
+                   weight = .3,
+                   smoothFactor = .2,
+                   label=tx.zips@data$census_tract,
+                   popup=paste0( '<p>', "<b>Zip Code: ",tx.zips@data$ZCTA5CE10,"</b>", '<p></p>', 
+                                 "Total Population: ",tx.zips@data$total_count, '</p><p>'),
+                   popupOptions = popupOptions(maxWidth ="100%", closeOnClick = TRUE))%>%
                 addAwesomeMarkers(lng=pearlevision.stores$civis_longitude, lat = pearlevision.stores$civis_latitude, icon = pearlevisionIcon)  %>%
                 addAwesomeMarkers(lng=lenscrafters.stores$civis_longitude, lat = lenscrafters.stores$civis_latitude, icon = lenscraftersIcon)
    })
@@ -564,7 +574,7 @@ server <- function(input, output) {
      
      cluster_graph <- cluster_graph + scale_colour_manual(name = "Cluster Group", values=colors)
      cluster_graph <- cluster_graph + xlab("Number of People in Census Tract")
-     cluster_graph <- cluster_graph + ylab("Index of Likelihood to Purchase Dunkin in Last 6 Months")
+     cluster_graph <- cluster_graph + ylab("Index of Likelihood to Visit Visionworks in Last 6 Months")
      print(cluster_graph)
    })
 }
