@@ -193,7 +193,7 @@ ui <- fluidPage(
 )
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(input, output, session) {
   
    output$map <- renderLeaflet({
       # generate bins based on input$bins from ui.R
@@ -582,6 +582,9 @@ server <- function(input, output) {
      cluster_graph <- cluster_graph + ylab("Index of Likelihood to Visit Visionworks in Last 6 Months")
      print(cluster_graph)
    })
+  
+  session$allowReconnect("force")
+  
 }
 
 # Run the application 
